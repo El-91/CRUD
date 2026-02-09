@@ -1,4 +1,4 @@
-<!DOCTYPE html>     
+<!DOCTYPE html>    
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,172 +9,121 @@
 
 <nav>
   <a href="#" id="ajoutBtn">ajout visiteur</a>
+  <a href="#" id="ajoutProfBtn">ajouter Professeur</a>
   <a href="#" id="listBtn">liste utilisateurs</a>
   <a href="#" id="dashBtn">dashboard</a>
 </nav>
 
-
-<form action="formulaire">
-   <input type="text" id="username" name="username" placeholder="votre nom" required>
-    <input type="email" id="email" name="email" placeholder="votre email" required>
-    <input type="number" name="age" id="age" placeholder="vote age" required>
-    <input type="text" name="identifiant" id="identifiant" placeholder="votre identifiant" required>
-    <button class="save">inscription </button>
-    <button id="reset">reset</button>
+<form>
+    <h3 id="formTitle">Inscription Visiteur</h3>
+    <input type="text" id="username" placeholder="votre nom" required>
+    <input type="email" id="email" placeholder="votre email" required>
+    <input type="number" id="age" placeholder="votre age" required>
+    <input type="text" id="identifiant" placeholder="votre identifiant" required>
+    <button class="save">inscription</button>
+    <button type="button" id="reset">reset</button>
 </form>
 
-<div id="userListContainer">
-    <h2>Liste des utilisateurs</h2>
+<div id="userListContainer" style="display:none;">
+    <h2>Liste des inscrits</h2>
     <ul id="userList"></ul>
-     <button id="resetlist">effacer</button>
-    <button id="editButton">editer</button>
+    <button id="resetlist">effacer</button>
 </div>
 
-<div id="dashboardContainer">
+<div id="dashboardContainer" style="display:none;">
     <h2>Dashboard</h2>
-    compteur d'utilisateurs inscrits : <span id="userCount"></span>
-
-   
+    visiteurs : <span id="userCount">0</span><br>
+    professeurs : <span id="professorCount">0</span>
 </div>
-
 
 <script>
-  
-
-
 const form = document.querySelector("form");
-form.style.display = "block";
+const formTitle = document.getElementById("formTitle");
+const utilisateurs = [];
+const professeurs = [];
+let estProf = false;
+
 form.style.width = "200px";
-form.style.marginBottom= "15px";
-form.style.padding= "10px";
-
-
-const inputs = form.querySelectorAll("input");
-inputs.forEach(input => {
-    input.style.display = "block";
-    input.style.marginBottom = "10px";
-    input.style.width = "100%";
-    input.style.padding = "8px";
-    input.style.boxSizing = "border-box";
+form.style.padding = "10px";
+form.querySelectorAll("input").forEach(i => {
+    i.style.display = "block";
+    i.style.marginBottom = "10px";
+    i.style.width = "100%";
 });
 
-const data ={
-    username: document.getElementById("username"),
-    email: document.getElementById("email"),
-    age: document.getElementById("age"),
-    identifiant: document.getElementById("identifiant")
-};
-const utilisateurs =[];
-const saveButton = document.querySelector(".save");
-saveButton.addEventListener("click", function(event) {
-    const utilisateur = {
-        username: data.username.value,
-        email: data.email.value,
-        age: data.age.value,
-        identifiant: data.identifiant.value
-    };      
-  
-    if(utilisateur.username === "" || utilisateur.email === "" || utilisateur.age === "" || utilisateur.identifiant === ""){
-        alert("veuillez remplir tous les champs");
-    }
-    else   
-      utilisateurs.push(utilisateur);
-    alert("utilisateur ajouté !");
-    event.preventDefault();
-
-});
-
-
-const editButton = document.getElementById("editButton");
-editButton.addEventListener("click", function(event) {
-    if (utilisateurs.length === 0) {
-        alert("Aucun utilisateur à éditer !");
-        return;
-    }
-
-    const identifiantToEdit = prompt("Entrez l'identifiant de l'utilisateur à éditer :");
-    const utilisateur = utilisateurs.find(user => user.identifiant === identifiantToEdit);
-
-    if (!utilisateur) {
-        alert("Utilisateur non trouvé !");
-        return;
-    }
-
-    const newUsername = prompt("Entrez le nouveau nom :", utilisateur.username);
-    const newEmail =  prompt("Entrez le nouvel email :", utilisateur.email);
-    const newAge =  prompt("Entrez le nouvel âge :", utilisateur.age);
-
-    if (newUsername !== null) utilisateur.username = newUsername;
-    if (newEmail !== null) utilisateur.email = newEmail;
-    if (newAge !== null) utilisateur.age = newAge;
-
-    alert("Utilisateur mis à jour !");  
-});
-
-const resetButton = document.getElementById("reset");
-resetButton.addEventListener("click", function(event) {
-        document.getElementById("username").value = "";
-    document.getElementById("email").value = "";
-    document.getElementById("age").value = "";
-    document.getElementById("identifiant").value = "";
-});
-
-const resetListButton = document.getElementById("resetlist");
-const userList = document.getElementById("userList");
-
-resetListButton.addEventListener("click", function (event) {
-
-    if (utilisateurs.length === 0) {
-        alert("Aucun utilisateur à supprimer !");
-    } else {
-        utilisateurs.length = 0;
-        userList.innerHTML = "";
-        alert("La liste des utilisateurs a été effacée !");
-    }
-});
-
-
-
-const ajoutBtn = document.getElementById("ajoutBtn");
-const listBtn = document.getElementById("listBtn");
-const dashBtn = document.getElementById("dashBtn");
-
-ajoutBtn.addEventListener("click", function(event) {
+document.getElementById("ajoutBtn").addEventListener("click", () => {
     form.style.display = "block";
+    formTitle.textContent = "Inscription Visiteur";
+    estProf = false;
     document.getElementById("userListContainer").style.display = "none";
     document.getElementById("dashboardContainer").style.display = "none";
 });
 
-listBtn.addEventListener("click", function(event) {
-    form.style.display = "none";
+document.getElementById("ajoutProfBtn").addEventListener("click", () => {
+    form.style.display = "block";
+    formTitle.textContent = "Inscription Professeur";
+    estProf = true;
+    document.getElementById("userListContainer").style.display = "none";
     document.getElementById("dashboardContainer").style.display = "none";
-    const userListContainer = document.getElementById("userListContainer");
-    const userList = document.getElementById("userList");
-    userList.innerHTML = "";
-    utilisateurs.forEach(function(utilisateur) {
-        const listItem = document.createElement("li");
-        listItem.textContent = `Nom: ${utilisateur.username}, Email: ${utilisateur.email}, Age: ${utilisateur.age}, Identifiant: ${utilisateur.identifiant}`;
-        userList.appendChild(listItem);
-    });
-    userListContainer.style.display = "block";
 });
 
-dashBtn.addEventListener("click", function(event) {
+document.querySelector(".save").addEventListener("click", (e) => {
+    e.preventDefault();
+    const data = {
+        username: document.getElementById("username").value,
+        email: document.getElementById("email").value,
+        age: document.getElementById("age").value,
+        identifiant: document.getElementById("identifiant").value
+    };
+
+    if(data.username && data.email && data.age && data.identifiant) {
+        if(estProf) {
+            professeurs.push(data);
+            alert("Professeur ajouté !");
+        } else {
+            utilisateurs.push(data);
+            alert("Visiteur ajouté !");
+        }
+        form.reset();
+    } else {
+        alert("Remplissez tout !");
+    }
+});
+
+document.getElementById("listBtn").addEventListener("click", () => {
+    form.style.display = "none";
+    document.getElementById("dashboardContainer").style.display = "none";
+    document.getElementById("userListContainer").style.display = "block";
+    const ul = document.getElementById("userList");
+    ul.innerHTML = "";
+    
+    utilisateurs.forEach(u => {
+        const li = document.createElement("li");
+        li.textContent = `[Visiteur] ${u.username}`;
+        ul.appendChild(li);
+    });
+    professeurs.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `[Prof] ${p.username}`;
+        ul.appendChild(li);
+    });
+});
+
+document.getElementById("dashBtn").addEventListener("click", () => {
     form.style.display = "none";
     document.getElementById("userListContainer").style.display = "none";
     document.getElementById("dashboardContainer").style.display = "block";
-    const userCount = document.getElementById("userCount");
-    userCount.textContent = utilisateurs.length;
-
+    document.getElementById("userCount").textContent = utilisateurs.length;
+    document.getElementById("professorCount").textContent = professeurs.length;
 });
 
+document.getElementById("reset").addEventListener("click", () => form.reset());
 
-
+document.getElementById("resetlist").addEventListener("click", () => {
+    utilisateurs.length = 0;
+    professeurs.length = 0;
+    document.getElementById("userList").innerHTML = "";
+});
 </script>
-
-
-
 </body>
-
-
 </html>
